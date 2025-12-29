@@ -1,6 +1,5 @@
 package im.bigs.pg.application.payment.port.`in`
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime
 
 /**

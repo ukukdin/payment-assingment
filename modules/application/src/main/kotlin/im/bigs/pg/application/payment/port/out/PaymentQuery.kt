@@ -1,6 +1,5 @@
 package im.bigs.pg.application.payment.port.out
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import im.bigs.pg.domain.payment.PaymentStatus
 import java.time.LocalDateTime
 

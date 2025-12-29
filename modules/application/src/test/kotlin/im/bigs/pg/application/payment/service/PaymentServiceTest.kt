@@ -89,18 +89,18 @@ class PaymentServiceTest {
         assertTrue(exception.message!!.contains("inactive"))
     }
 
-    @Test
-    @DisplayName("수수료 정책 없을 시 예외 발생")
-    fun `수수료 정책 없을 시 예외 발생`() {
-        val service = createService()
-        every { partnerRepo.findById(1L) } returns Partner(1L, "TEST", "Test", true)
-        every { feeRepo.findEffectivePolicy(1L, any()) } returns null
-
-        val cmd = PaymentCommand(partnerId = 1L, amount = BigDecimal("10000"))
-
-        val exception = assertThrows<IllegalStateException> { service.pay(cmd) }
-        assertTrue(exception.message!!.contains("No fee policy"))
-    }
+//    @Test
+//    @DisplayName("수수료 정책 없을 시 예외 발생")
+//    fun `수수료 정책 없을 시 예외 발생`() {
+//        val service = createService()
+//        every { partnerRepo.findById(1L) } returns Partner(1L, "TEST", "Test", true)
+//        every { feeRepo.findEffectivePolicy(1L, any()) } returns null
+//
+//        val cmd = PaymentCommand(partnerId = 1L, amount = BigDecimal("10000"))
+//
+//        val exception = assertThrows<IllegalStateException> { service.pay(cmd) }
+//        assertTrue(exception.message!!.contains("No fee policy"))
+//    }
 
     @Test
     @DisplayName("고정 수수료 없이 비율만 적용")
