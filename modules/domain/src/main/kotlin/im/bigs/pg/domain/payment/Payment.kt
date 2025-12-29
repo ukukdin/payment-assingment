@@ -1,6 +1,5 @@
 package im.bigs.pg.domain.payment
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -32,12 +31,9 @@ data class Payment(
     val cardBin: String? = null,
     val cardLast4: String? = null,
     val approvalCode: String,
-    @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val approvedAt: LocalDateTime,
     val status: PaymentStatus,
-    @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val updatedAt: LocalDateTime = LocalDateTime.now(),
 )
 

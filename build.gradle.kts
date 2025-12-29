@@ -16,7 +16,7 @@ allprojects {
     group = "kr.thedream"
     version = "0.0.1-SNAPSHOT"
 
-    java { toolchain { languageVersion = JavaLanguageVersion.of(22) } }
+    java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 
     kotlin {
         compilerOptions {
