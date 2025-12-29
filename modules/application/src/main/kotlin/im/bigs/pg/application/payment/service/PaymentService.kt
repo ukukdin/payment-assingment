@@ -37,7 +37,7 @@ class PaymentService(
 
         val pgClient =
             pgClients.firstOrNull { it.supports(partner.id) }
-                ?: throw IllegalStateException("No PG client for partner ${partner.id}")
+                ?: throw IllegalStateException("파트너용(${partner.id}) PG 클라이언트 없음")
 
         val approve =
             pgClient.approve(
@@ -54,7 +54,7 @@ class PaymentService(
                 ),
             )
         val policy = feePolicyRepository.findEffectivePolicy(partner.id)
-            ?: throw IllegalStateException("No fee policy for partner ${partner.id}")
+            ?: throw IllegalStateException("파트너(${partner.id})에 대한 수수료 면제 정책 ")
         val (fee, net) = FeeCalculator.calculateFee(command.amount, policy.percentage, policy.fixedFee)
 
         // cardBin: cardNumber에서 앞 6자리 추출, 없으면 command.cardBin 사용
