@@ -132,6 +132,44 @@ GET /api/v1/payments?partnerId=1&status=APPROVED&from=2025-01-01T00:00:00Z&to=20
 - 오픈API 문서화(springdoc 등) 또는 간단한 운영지표(로그/메트릭)
 - MariaDB 등 외부 DB로 전환(docker-compose 포함) 및 마이그레이션 도구 적용
 
+### 10.1 구현된 선택 과제
+
+#### OpenAPI 문서화 (springdoc-openapi)
+Swagger UI를 통해 API 문서를 자동 생성합니다.
+
+**접속 방법:**
+```
+http://localhost:8080/swagger-ui.html
+```
+
+**구현 내용:**
+- `springdoc-openapi-starter-webmvc-ui:2.3.0` 의존성 추가
+- `OpenApiConfig.kt`: API 메타정보 설정 (제목, 설명, 버전, 연락처)
+- Controller에 `@Tag`, `@Operation`, `@ApiResponses`, `@Parameter` 어노테이션 적용
+- DTO에 `@Schema` 어노테이션으로 필드 설명 및 예시값 추가
+
+#### 추가 제휴사 연동 (TossPgClient)
+토스페이먼츠 스타일의 Mock PG 클라이언트를 추가하고, 전략 패턴 기반 라우팅을 개선했습니다.
+
+**PG 어댑터 라우팅 전략:**
+
+| PG 어댑터 | partnerId 조건 | 예시 ID |
+|-----------|----------------|---------|
+| MockPgClient | `partnerId % 3 == 1` | 1, 4, 7, 10... |
+| TestPgClient | `partnerId % 3 == 2` | 2, 5, 8, 11... |
+| TossPgClient | `partnerId % 3 == 0` | 3, 6, 9, 12... |
+
+**구현 내용:**
+- `TossPgClient.kt`: 토스페이먼츠 paymentKey 형식의 승인코드 생성
+- `PgClientOutPort` 인터페이스의 `supports()` 메서드로 전략 선택
+- 각 어댑터가 충돌 없이 partnerId를 분배하도록 라우팅 로직 개선
+
+**새 제휴사 추가 방법:**
+1. `PgClientOutPort` 인터페이스 구현
+2. `supports(partnerId)` 메서드에서 담당할 partnerId 조건 정의
+3. `approve(request)` 메서드에서 PG사 API 연동 로직 구현
+4. `@Component` 어노테이션으로 빈 등록 (자동으로 라우팅에 포함)
+
 ## 11. 참고자료
 - [과제 내 연동 대상 API 문서](https://api-test-pg.bigs.im/docs/index.html)
 
