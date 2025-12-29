@@ -174,7 +174,7 @@ tosspayments:
 
 > 테스트 키 발급: https://developers.tosspayments.com 에서 회원가입 후 발급
 
-**테스트 방법:**
+**테스트 방법:** 
 ```bash
 # 서버 실행
 ./gradlew :modules:bootstrap:api-payment-gateway:bootRun
