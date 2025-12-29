@@ -148,21 +148,61 @@ http://localhost:8080/swagger-ui.html
 - Controller에 `@Tag`, `@Operation`, `@ApiResponses`, `@Parameter` 어노테이션 적용
 - DTO에 `@Schema` 어노테이션으로 필드 설명 및 예시값 추가
 
-#### 추가 제휴사 연동 (TossPgClient)
-토스페이먼츠 스타일의 Mock PG 클라이언트를 추가하고, 전략 패턴 기반 라우팅을 개선했습니다.
+#### 추가 제휴사 연동 (TossPgClient - 토스페이먼츠 실제 API 연동)
+토스페이먼츠 키인결제 API를 실제로 연동하여, TestPgClient와 동일한 수준의 실제 PG 연동을 구현했습니다.
 
 **PG 어댑터 라우팅 전략:**
 
-| PG 어댑터 | partnerId 조건 | 예시 ID |
-|-----------|----------------|---------|
-| MockPgClient | `partnerId % 3 == 1` | 1, 4, 7, 10... |
-| TestPgClient | `partnerId % 3 == 2` | 2, 5, 8, 11... |
-| TossPgClient | `partnerId % 3 == 0` | 3, 6, 9, 12... |
+| PG 어댑터 | partnerId 조건 | 예시 ID | 연동 방식 |
+|-----------|----------------|---------|-----------|
+| MockPgClient | `partnerId % 3 == 1` | 1, 4, 7, 10... | Mock (항상 성공) |
+| TestPgClient | `partnerId % 3 == 2` | 2, 5, 8, 11... | 실제 API (TestPG) |
+| TossPgClient | `partnerId % 3 == 0` | 3, 6, 9, 12... | **실제 API (토스페이먼츠)** |
 
-**구현 내용:**
-- `TossPgClient.kt`: 토스페이먼츠 paymentKey 형식의 승인코드 생성
-- `PgClientOutPort` 인터페이스의 `supports()` 메서드로 전략 선택
-- 각 어댑터가 충돌 없이 partnerId를 분배하도록 라우팅 로직 개선
+**토스페이먼츠 연동 구현 내용:**
+- `TossPgClient.kt`: 토스페이먼츠 키인결제 API (`POST /v1/payments/key-in`) 연동
+- Basic Auth 인증 (Secret Key 기반)
+- 카드 정보 암호화 없이 HTTPS 통신 (토스페이먼츠 표준)
+- 응답의 `paymentKey`를 승인코드로 저장
+
+**설정 방법 (application.yml):**
+```yaml
+tosspayments:
+  base-url: https://api.tosspayments.com
+  secret-key: test_sk_XXXXXXXX  # 토스페이먼츠 개발자센터에서 발급
+```
+
+> 테스트 키 발급: https://developers.tosspayments.com 에서 회원가입 후 발급
+
+**테스트 방법:**
+```bash
+# 서버 실행
+./gradlew :modules:bootstrap:api-payment-gateway:bootRun
+
+# 토스페이먼츠 결제 테스트 (partnerId=3)
+curl -X POST http://localhost:8080/api/v1/payments \
+  -H "Content-Type: application/json" \
+  -d '{
+    "partnerId": 3,
+    "amount": 10000,
+    "cardNumber": "5365530016471433",
+    "expiry": "1228",
+    "birthDate": "19900101",
+    "password": "12"
+  }'
+```
+
+**필수 요청 파라미터:**
+| 파라미터 | 설명 | 예시 |
+|----------|------|------|
+| partnerId | 3의 배수 (토스페이먼츠 라우팅) | 3, 6, 9... |
+| amount | 결제 금액 | 10000 |
+| cardNumber | 카드번호 (하이픈 없이) | "5365530016471433" |
+| expiry | 유효기간 (MMYY) | "1228" |
+| birthDate | 생년월일 (YYYYMMDD) | "19900101" |
+| password | 카드 비밀번호 앞 2자리 | "12" |
+
+> **참고**: 토스페이먼츠 테스트 환경에서는 실제 카드번호로 결제해도 실제 결제가 발생하지 않습니다.
 
 **새 제휴사 추가 방법:**
 1. `PgClientOutPort` 인터페이스 구현
