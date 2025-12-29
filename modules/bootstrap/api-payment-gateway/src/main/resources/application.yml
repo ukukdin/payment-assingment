@@ -11,6 +11,10 @@ spring:
       hibernate:
         format_sql: true
         jdbc.time_zone: UTC
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -21,3 +25,10 @@ testpg:
   base-url: https://api-test-pg.bigs.im
   api-key: 11111111-1111-4111-8111-111111111111
   iv: AAAAAAAAAAAAAAAA
+
+# 토스페이먼츠 설정
+# - 테스트 키는 토스페이먼츠 개발자센터에서 발급: https://developers.tosspayments.com
+# - 테스트 환경에서는 실제 카드로 결제해도 돈이 빠지지 않음
+tosspayments:
+  base-url: https://api.tosspayments.com
+  secret-key: test_sk_5OWRapdA8djRLaXg2BmBVo1zEqZK
