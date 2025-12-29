@@ -11,11 +11,8 @@ import java.time.LocalDateTime
 data class QueryFilter(
     val partnerId: Long? = null,
     val status: String? = null,
-    @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val from: LocalDateTime? = null,
-    @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val to: LocalDateTime? = null,
     val cursor: String? = null,
     val limit: Int = 20,
 )
-

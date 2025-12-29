@@ -8,7 +8,6 @@ import java.time.LocalDateTime
 data class PaymentPage(
     val items: List<Payment>,
     val hasNext: Boolean,
-    @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val nextCursorCreatedAt: LocalDateTime?,
     val nextCursorId: Long?,
 )

@@ -11,12 +11,9 @@ import java.time.LocalDateTime
 data class PaymentQuery(
     val partnerId: Long? = null,
     val status: PaymentStatus? = null,
-    @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val from: LocalDateTime? = null,
-    @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val to: LocalDateTime? = null,
     val limit: Int = 20,
-    @get:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val cursorCreatedAt: LocalDateTime? = null,
     val cursorId: Long? = null,
 )
